@@ -22,21 +22,19 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           cd /var/www/2405029_CI-CD/blog-cms-main
-
-          php artisan down
-
+          
+          # Ambil kode terbaru
           git pull origin main
-
+          
+          # Update library & Build Aset (PENTING untuk tampilan)
           composer install --no-dev --optimize-autoloader
-
           npm install
           npm run build
-
-          php artisan test
-
+          
+          # Bersihkan semua ingatan lama Laravel
           php artisan migrate --force
           php artisan optimize:clear
           php artisan view:clear
+          php artisan cache:clear
+          php artisan config:clear
           php artisan optimize
-
-          php artisan up
