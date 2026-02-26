@@ -21,11 +21,22 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
         script: |
-          cd /var/www/blog-cms-main
+          cd /var/www/2405029_CI-CD/blog-cms-main
+
+          php artisan down
+
           git pull origin main
-          composer install --no-dev
+
+          composer install --no-dev --optimize-autoloader
+
+          npm install
+          npm run build
+
+          php artisan test
+
           php artisan migrate --force
-          php artisan optimize
-          php artisan view:clear
-          php artisan cache:clear
           php artisan optimize:clear
+          php artisan view:clear
+          php artisan optimize
+
+          php artisan up
