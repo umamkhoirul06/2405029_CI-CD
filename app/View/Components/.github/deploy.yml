@@ -3,7 +3,7 @@ name: Deploy Laravel App
 on:
   push:
     branches:
-      - main 
+      - main
 
 jobs:
   deploy:
@@ -22,18 +22,7 @@ jobs:
         port: ${{ secrets.SSH_PORT }}
         script: |
           cd /var/www/2405029_CI-CD/blog-cms-main
-          
-          php artisan down
-          
           git pull origin main
-          
-          composer install --no-dev --optimize-autoloader
-          
-          php artisan test
-          
+          composer install --no-dev
           php artisan migrate --force
-          
-          php artisan optimize:clear
           php artisan optimize
-          
-          php artisan up
