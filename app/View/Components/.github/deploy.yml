@@ -21,7 +21,7 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
         script: |
-          cd /var/www/2405029_CI-CD/blog-cms-main
+          cd /var/www/blog-cms-main
           git pull origin main
           composer install --no-dev
           php artisan migrate --force
