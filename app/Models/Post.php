@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Carbon\Carbon;
+use App\Traits\SanitizesHtml;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 
 class Post extends Model
 {
-    use HasFactory;
+    use HasFactory, SanitizesHtml;
     protected $fillable = ['title', 'content', 'image', 'category_id', 'user_id', 'slug', 'status'];
 
     protected $casts = [

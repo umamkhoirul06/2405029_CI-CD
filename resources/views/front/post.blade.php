@@ -1,103 +1,193 @@
 <x-blog-layout title="{{ $post_title }}">
 
-    <section class="w-full lg:w-2/3 flex flex-col mx-auto space-y-10">
+    <section class="w-full space-y-8">
 
-        {{-- Main Post --}}
-        <article class="bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden">
+        {{-- Main Post Article --}}
+        <article class="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden hover:shadow-xl transition-all duration-300">
 
-            {{-- Image --}}
+            {{-- Featured Image --}}
             @if ($post->image)
-                <img src="{{ $post->image }}" alt="{{ $post->title }}" width="1000" height="500"
-                    class="w-full h-72 sm:h-96 object-cover">
+                <div class="relative h-96 md:h-[500px] overflow-hidden bg-gradient-to-br from-slate-200 to-slate-300">
+                    <img src="{{ $post->image }}" 
+                         alt="{{ $post->title }}" 
+                         class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                         loading="lazy"
+                         width="1000" 
+                         height="500">
+                </div>
             @endif
 
-            <div class="p-6 sm:p-8 space-y-4">
+            {{-- Article Content --}}
+            <div class="p-8 md:p-12 space-y-6">
 
-                {{-- Category --}}
-                <a href="{{ route('category.show', $post->category->slug) }}"
-                    class="inline-block px-4 py-1.5 bg-indigo-50 text-indigo-700 border border-indigo-200
-                           rounded-full text-xs uppercase font-bold tracking-wide">
-                    {{ $post->category->name }}
-                </a>
+                {{-- Category Badge --}}
+                <div class="flex items-center space-x-3">
+                    <a href="{{ route('category.show', $post->category->slug) }}"
+                        class="inline-block px-4 py-2 bg-gradient-to-r from-indigo-100 to-purple-100 text-indigo-700 rounded-full text-xs font-bold uppercase tracking-wider hover:from-indigo-200 hover:to-purple-200 transition-all duration-300">
+                        <i class="fas fa-folder mr-2"></i> {{ $post->category->name }}
+                    </a>
+                </div>
 
-                {{-- Title --}}
-                <h1 class="text-3xl font-bold text-gray-900 leading-tight">
+                {{-- Article Title --}}
+                <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight">
                     {{ $post->title }}
                 </h1>
 
-                {{-- Meta --}}
-                <p class="text-sm text-gray-500">
-                    By
-                    <span class="font-semibold text-gray-700">{{ $post->user->name }}</span>
-                    <span class="mx-1">•</span>
-                    {{ $post->created_at }}
-                </p>
+                {{-- Article Meta --}}
+                <div class="flex flex-col md:flex-row md:items-center gap-4 pb-6 border-b border-slate-200">
+                    <div class="flex items-center space-x-2 text-slate-600">
+                        <i class="fas fa-calendar"></i>
+                        <span class="text-sm font-medium">{{ $post->created_at }}</span>
+                    </div>
+                    <div class="flex items-center space-x-2 text-slate-600">
+                        <i class="fas fa-clock"></i>
+                        <span class="text-sm font-medium">{{ ceil(strlen($post->content) / 200) }} min read</span>
+                    </div>
+                    <div class="flex items-center space-x-2 text-slate-600">
+                        <i class="fas fa-comments"></i>
+                        <span class="text-sm font-medium">{{ $post->comments_count }} comments</span>
+                    </div>
+                </div>
 
-                {{-- Content --}}
-                <div class="prose max-w-none">
+                {{-- Article Body --}}
+                <div class="prose max-w-none text-slate-700 leading-relaxed">
                     {!! $post->content !!}
                 </div>
+
+                {{-- Tags --}}
+                @if ($post->tags_count > 0)
+                    <div class="pt-6 border-t border-slate-200">
+                        <div class="flex flex-wrap gap-2">
+                            @foreach ($post->tags as $tag)
+                                <a href="{{ route('tag.show', $tag->name) }}"
+                                    class="inline-block px-3 py-2 text-xs font-semibold bg-slate-100 text-slate-700 rounded-lg hover:bg-indigo-600 hover:text-white transition-all duration-300">
+                                    #{{ $tag->name }}
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
 
             </div>
         </article>
 
-        {{-- Author --}}
-        <div class="bg-white rounded-3xl shadow-lg border border-gray-100 p-6 flex gap-6">
-            <img src="{{ $post->user->avatar }}" class="w-20 h-20 rounded-full object-cover border border-gray-200">
+        {{-- Author Bio Card --}}
+        <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-2xl border border-slate-200 p-8 md:p-10 shadow-md hover:shadow-lg transition-all duration-300">
+            <div class="flex flex-col md:flex-row gap-6 items-start md:items-center">
+                <img src="{{ $post->user->avatar }}" 
+                     alt="{{ $post->user->name }}" 
+                     class="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-4 border-white shadow-lg">
 
-            <div class="flex-1">
-                <h3 class="text-xl font-semibold text-gray-900">{{ $post->user->name }}</h3>
-                <p class="text-gray-600 text-sm mt-1">{{ $post->user->bio }}</p>
+                <div class="flex-1">
+                    <h3 class="text-2xl font-extrabold text-slate-900">{{ $post->user->name }}</h3>
+                    <p class="text-slate-600 text-sm mt-1 leading-relaxed">{{ $post->user->bio }}</p>
 
-                <div class="flex items-center gap-4 text-lg text-gray-500 mt-3">
-                    @if ($post->user->url_fb)
-                        <a href="{{ $post->user->url_fb }}" class="hover:text-blue-600"><i
-                                class="fab fa-facebook"></i></a>
-                    @endif
-                    @if ($post->user->url_insta)
-                        <a href="{{ $post->user->url_insta }}" class="hover:text-pink-600"><i
-                                class="fab fa-instagram"></i></a>
-                    @endif
-                    @if ($post->user->url_twitter)
-                        <a href="{{ $post->user->url_twitter }}" class="hover:text-sky-500"><i
-                                class="fab fa-twitter"></i></a>
-                    @endif
-                    @if ($post->user->url_linkedin)
-                        <a href="{{ $post->user->url_linkedin }}" class="hover:text-blue-700"><i
-                                class="fab fa-linkedin"></i></a>
-                    @endif
+                    <div class="flex items-center gap-3 text-lg mt-4">
+                        @if ($post->user->url_fb)
+                            <a href="{{ $post->user->url_fb }}" target="_blank" rel="noopener noreferrer"
+                                class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-blue-600 hover:bg-blue-600 hover:text-white shadow-md transition-all duration-300 hover:scale-110">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                        @endif
+                        @if ($post->user->url_insta)
+                            <a href="{{ $post->user->url_insta }}" target="_blank" rel="noopener noreferrer"
+                                class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-pink-600 hover:bg-pink-600 hover:text-white shadow-md transition-all duration-300 hover:scale-110">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        @endif
+                        @if ($post->user->url_twitter)
+                            <a href="{{ $post->user->url_twitter }}" target="_blank" rel="noopener noreferrer"
+                                class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-sky-500 hover:bg-sky-500 hover:text-white shadow-md transition-all duration-300 hover:scale-110">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                        @endif
+                        @if ($post->user->url_linkedin)
+                            <a href="{{ $post->user->url_linkedin }}" target="_blank" rel="noopener noreferrer"
+                                class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-blue-700 hover:bg-blue-700 hover:text-white shadow-md transition-all duration-300 hover:scale-110">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
 
         {{-- Comment Form --}}
         @auth
-            <div class="bg-white rounded-3xl shadow-lg border border-gray-100 p-6 space-y-3">
+            <div class="bg-white rounded-2xl shadow-lg border border-slate-200 p-8 space-y-6">
 
-                <h3 class="text-xl font-semibold">Add a comment</h3>
+                <h3 class="text-2xl font-bold text-slate-900 flex items-center space-x-3">
+                    <i class="fas fa-comment text-indigo-600"></i>
+                    <span>Add Your Comment</span>
+                </h3>
 
-                <form method="POST" action="{{ route('post.comment', $post) }}" class="space-y-3">
+                <form method="POST" action="{{ route('post.comment', $post) }}" class="space-y-4">
                     @csrf
 
-                    <textarea name="body" rows="5"
-                        class="w-full border rounded-xl p-3 text-sm bg-gray-50 focus:ring-indigo-500 focus:border-indigo-500"
-                        placeholder="Write your comment..."></textarea>
+                    <div>
+                        <textarea name="body" 
+                                  rows="5"
+                                  placeholder="Share your thoughts about this post..."
+                                  class="w-full border border-slate-300 rounded-xl p-4 text-sm bg-slate-50 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white transition-all duration-300 resize-none"
+                                  required></textarea>
+                        @error('body')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
 
-                    <button class="px-5 py-2 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700">
-                        Submit
+                    <button type="submit" 
+                            class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center space-x-2">
+                        <i class="fas fa-paper-plane"></i>
+                        <span>Post Comment</span>
                     </button>
                 </form>
 
             </div>
         @else
-            <div class="bg-yellow-50 border border-yellow-200 rounded-3xl p-6 text-center text-yellow-900">
-                Please <a href="{{ route('login') }}" class="font-bold underline">login</a> to comment.
+            <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border-l-4 border-blue-500 rounded-xl p-8 text-center">
+                <i class="fas fa-info-circle text-blue-600 text-3xl mb-3"></i>
+                <p class="text-slate-800 font-medium mb-4">Want to join the conversation?</p>
+                <p class="text-slate-600 text-sm mb-6">Please <a href="{{ route('login') }}" class="font-bold text-blue-600 hover:text-blue-700 underline">sign in</a> or <a href="{{ route('register') }}" class="font-bold text-blue-600 hover:text-blue-700 underline">create an account</a> to comment.</p>
+                <div class="flex gap-4 justify-center flex-wrap">
+                    <a href="{{ route('login') }}" class="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition">Login</a>
+                    <a href="{{ route('register') }}" class="px-6 py-2 bg-slate-200 text-slate-800 rounded-lg font-semibold hover:bg-slate-300 transition">Sign Up</a>
+                </div>
             </div>
         @endauth
 
+        {{-- Comments Section --}}
+        @if ($post->comments_count > 0)
+            <div class="bg-white rounded-2xl shadow-lg border border-slate-200 p-8">
+                <h3 class="text-2xl font-bold text-slate-900 mb-6 flex items-center space-x-3">
+                    <i class="fas fa-comments text-indigo-600"></i>
+                    <span>{{ $post->comments_count }} Comments</span>
+                </h3>
 
-        {{-- Comments --}}
-        <div class="bg-white rounded-3xl shadow-lg border border-gray-100 p-6">
+                <div class="space-y-6">
+                    @foreach ($post->comments as $comment)
+                        <div class="pb-6 border-b border-slate-200 last:border-0">
+                            <div class="flex gap-4">
+                                <img src="{{ $comment->user->avatar }}" 
+                                     alt="{{ $comment->user->name }}" 
+                                     class="w-12 h-12 rounded-full object-cover border border-slate-200">
+                                
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <h4 class="font-bold text-slate-900">{{ $comment->user->name }}</h4>
+                                        <span class="text-xs text-slate-500">{{ $comment->created_at->diffForHumans() }}</span>
+                                    </div>
+                                    <p class="text-slate-700 mt-2">{{ $comment->body }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
+    </section>
+
+</x-blog-layout>
 
             <h3 class="text-xl font-semibold mb-4">Comments</h3>
 
